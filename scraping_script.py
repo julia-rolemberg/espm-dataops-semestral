@@ -37,3 +37,4 @@ for link in links:
   temp_dfs.append(tmp_df)
 hockey_team_df = pd.concat(temp_dfs, axis=0).reset_index()
 hockey_team_df.sort_values(["year", "name"], inplace=True)
+print("collected all data")
