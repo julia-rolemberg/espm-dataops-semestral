@@ -2,8 +2,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import re
-import mysql.connector
-from mysql.connector.constants import ClientFlag
+import MySQLdb
 
 def scrape_this(uri="/pages/forms/"):
   page = requests.get("https://scrapethissite.com" + uri)
@@ -26,42 +25,6 @@ def scrape_this(uri="/pages/forms/"):
   data_df = pd.DataFrame(parsed_data)
   return data_df
 
-# config do exemplo no medium, precisa mudar para o de quem fizer a instância SQL no GCP
-# config = {
-#     'user': 'root',
-#     'password': 'Password123',
-#     'host': '94.944.94.94',
-#     'client_flags': [ClientFlag.SSL],
-#     'ssl_ca': 'ssl/server-ca.pem',
-#     'ssl_cert': 'ssl/client-cert.pem',
-#     'ssl_key': 'ssl/client-key.pem'
-# }
-
-# now we establish our connection
-# cnxn = mysql.connector.connect(**config)
-
-# cursor = cnxn.cursor()  # initialize connection cursor
-# cursor.execute('CREATE DATABASE testdb')  # create a new 'testdb' database
-# cnxn.close()  # close connection because we will be reconnecting to testdb
-
-# config['database'] = 'testdb'  # add new database to config dict
-# cnxn = mysql.connector.connect(**config)
-# cursor = cnxn.cursor()
-
-# cursor.execute("CREATE TABLE hockey_teams ("
-#                "name VARCHAR(255),"
-#                "year INTEGER(255),"
-#                "wins INTEGER(255),"
-#                "losses INTEGER(255),"
-#                "ot-losses INTEGER(255),"
-#                "pct FLOAT(6,2),"
-#                "gf INTEGER(255),"
-#                "ga INTEGER(255),"
-#                "diff INTEGER(255),"
-#                "id INTEGER(255) )")
-
-# cnxn.commit()  # this commits changes to the database
-
 page = requests.get("https://scrapethissite.com/pages/forms/")
 soup = BeautifulSoup(page.text, "html.parser")
 pagination = soup.find("ul", attrs={"class": "pagination"})
@@ -81,10 +44,19 @@ hockey_team_df['id'] = hockey_team_df.index + 1
 print(hockey_team_df)
 print("collected all data")
 
-# first we setup our query
-# query = ("INSERT INTO hockey_teams (name, year, wins, losses, ot-losses, pct, gf, ga, diff, id) "
-#          "VALUES (%s, %s, %s, %s, %s, %s, %s)")
+con = MySQLdb.connect("34.23.244.182","root","root","dataops")
 
-# # then we execute with every row in our dataframe
-# cursor.executemany(query, list(hockey_team_df.to_records(index=False)))
-# cnxn.commit()  # and commit changes
+cursor = con.cursor()
+
+header = list(map(lambda x: x.replace("-","_"),hockey_team_df.columns.values))
+print(header)
+table_name = "hockey_team"
+create_table_query = f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join([f'{col} VARCHAR(255)' for col in header])});"
+cursor.execute(create_table_query)
+
+for index, row in hockey_team_df.iterrows():
+  insert_query = f"INSERT INTO {table_name} ({', '.join(header)}) VALUES ({', '.join(['%s' for _ in header])})"
+  cursor.execute(insert_query, row)
+
+con.commit()
+con.close()
