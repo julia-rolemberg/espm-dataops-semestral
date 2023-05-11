@@ -2,6 +2,8 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import re
+import mysql.connector
+from mysql.connector.constants import ClientFlag
 
 def scrape_this(uri="/pages/forms/"):
   page = requests.get("https://scrapethissite.com" + uri)
@@ -23,6 +25,24 @@ def scrape_this(uri="/pages/forms/"):
 
   data_df = pd.DataFrame(parsed_data)
   return data_df
+
+# config do exemplo no medium, precisa mudar para o de quem fizer a instância SQL no GCP
+# config = {
+#     'user': 'root',
+#     'password': 'Password123',
+#     'host': '94.944.94.94',
+#     'client_flags': [ClientFlag.SSL],
+#     'ssl_ca': 'ssl/server-ca.pem',
+#     'ssl_cert': 'ssl/client-cert.pem',
+#     'ssl_key': 'ssl/client-key.pem'
+# }
+
+# now we establish our connection
+# cnxn = mysql.connector.connect(**config)
+
+# cursor = cnxn.cursor()  # initialize connection cursor
+# cursor.execute('CREATE DATABASE testdb')  # create a new 'testdb' database
+# cnxn.close()  # close connection because we will be reconnecting to testdb
 
 page = requests.get("https://scrapethissite.com/pages/forms/")
 soup = BeautifulSoup(page.text, "html.parser")
