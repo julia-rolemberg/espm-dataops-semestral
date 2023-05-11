@@ -80,3 +80,11 @@ hockey_team_df = hockey_team_df.drop(columns='index', axis=1)
 hockey_team_df['id'] = hockey_team_df.index + 1
 print(hockey_team_df)
 print("collected all data")
+
+# first we setup our query
+# query = ("INSERT INTO hockey_teams (name, year, wins, losses, ot-losses, pct, gf, ga, diff, id) "
+#          "VALUES (%s, %s, %s, %s, %s, %s, %s)")
+
+# # then we execute with every row in our dataframe
+# cursor.executemany(query, list(hockey_team_df.to_records(index=False)))
+# cnxn.commit()  # and commit changes
