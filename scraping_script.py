@@ -44,6 +44,24 @@ def scrape_this(uri="/pages/forms/"):
 # cursor.execute('CREATE DATABASE testdb')  # create a new 'testdb' database
 # cnxn.close()  # close connection because we will be reconnecting to testdb
 
+# config['database'] = 'testdb'  # add new database to config dict
+# cnxn = mysql.connector.connect(**config)
+# cursor = cnxn.cursor()
+
+# cursor.execute("CREATE TABLE hockey_teams ("
+#                "name VARCHAR(255),"
+#                "year INTEGER(255),"
+#                "wins INTEGER(255),"
+#                "losses INTEGER(255),"
+#                "ot-losses INTEGER(255),"
+#                "pct FLOAT(6,2),"
+#                "gf INTEGER(255),"
+#                "ga INTEGER(255),"
+#                "diff INTEGER(255),"
+#                "id INTEGER(255) )")
+
+# cnxn.commit()  # this commits changes to the database
+
 page = requests.get("https://scrapethissite.com/pages/forms/")
 soup = BeautifulSoup(page.text, "html.parser")
 pagination = soup.find("ul", attrs={"class": "pagination"})
