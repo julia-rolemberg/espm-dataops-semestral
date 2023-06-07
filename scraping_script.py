@@ -60,3 +60,4 @@ for index, row in hockey_team_df.iterrows():
 
 con.commit()
 con.close()
+#
